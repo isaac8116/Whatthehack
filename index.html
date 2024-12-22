@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ESP32 Sensor Data</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <h1>ESP32 Sensor Data Visualization</h1>
+
+    <div style="width: 80%; margin: auto;">
+        <h3>Temperature (°C)</h3>
+        <canvas id="temperatureChart"></canvas>
+
+        <h3>Humidity (%)</h3>
+        <canvas id="humidityChart"></canvas>
+
+        <h3>Light Intensity (%)</h3>
+        <canvas id="lightChart"></canvas>
+    </div>
+
+    <script>
+        // Initialize empty arrays for storing sensor data
+        var sensorData = {
+            temperature: [],
+            humidity: [],
+            light: [],
+            timestamps: []
+        };
+
+        // Get context for the charts
+        var ctxTemp = document.getElementById('temperatureChart').getContext('2d');
+        var ctxHum = document.getElementById('humidityChart').getContext('2d');
+        var ctxLight = document.getElementById('lightChart').getContext('2d');
+
+        // Create the temperature chart
+        var temperatureChart = new Chart(ctxTemp, {
+            type: 'line',
+            data: {
+                labels: sensorData.timestamps,
+                datasets: [{
+                    label: 'Temperature (°C)',
+                    data: sensorData.temperature,
+                    borderColor: 'red',
+                    backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                    fill: true
+                }]
+            }
+        });
+
+        // Create the humidity chart
+        var humidityChart = new Chart(ctxHum, {
+            type: 'line',
+            data: {
+                labels: sensorData.timestamps,
+                datasets: [{
+                    label: 'Humidity (%)',
+                    data: sensorData.humidity,
+                    borderColor: 'blue',
+                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                    fill: true
+                }]
+            }
+        });
+
+        // Create the light intensity chart
+        var lightChart = new Chart(ctxLight, {
+            type: 'line',
+            data: {
+                labels: sensorData.timestamps,
+                datasets: [{
+                    label: 'Light Intensity (%)',
+                    data: sensorData.light,
+                    borderColor: 'yellow',
+                    backgroundColor: 'rgba(255, 206, 86, 0.2)',
+                    fill: true
+                }]
+            }
+        });
+
+        // Fetch sensor data every 5 seconds
+        setInterval(function() {
+            fetch('/output_log.txt')  // Change to '/sensor' to match Flask route
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Failed to fetch sensor data');
+                    }
+                    return response.json();
+                })
+                .then(newData => {
+                    var now = new Date().toLocaleTimeString();
+                    
+                    // Push new data to arrays
+                    sensorData.temperature.push(newData.temperature);
+                    sensorData.humidity.push(newData.humidity);
+                    sensorData.light.push(newData.light);
+                    ensorData.timestamps.push(newData.timestamps);
+
+                    // Limit to last 10 readings
+                    if (sensorData.temperature.length > 10) {
+                        sensorData.temperature.shift();
+                        sensorData.humidity.shift();
+                        sensorData.light.shift();
+                        sensorData.timestamps.shift();
+                    }
+
+                    // Update the charts
+                    temperatureChart.update();
+                    humidityChart.update();
+                    lightChart.update();
+                })
+                .catch(error => {
+                    console.error('Error fetching data:', error);
+                });
+        }, 5000);  // Fetch data every 5 seconds
+    </script>
+</body>
+</html>

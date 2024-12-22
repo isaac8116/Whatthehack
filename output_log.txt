@@ -1,0 +1,5 @@
+2024-12-22 13:16:05, Light intensity Index20.36%  Humidity: 63.40%  Temperature: 28.70°C 83.66
+2024-12-22 13:16:10, Light intensity Index20.43%  Humidity: 63.20%  Temperature: 28.70°C 83.66
+2024-12-22 13:16:15, Light intensity Index20.43%  Humidity: 62.90%  Temperature: 28.70°C 83.66
+2024-12-22 13:16:20, Light intensity Index20.54%  Humidity: 62.70%  Temperature: 28.70°C 83.66
+2024-12-22 13:16:25, Light intensity Index20.43%  Humidity: 62.60%  Temperature: 28.70°C 83.66
